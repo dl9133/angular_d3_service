@@ -1,0 +1,28 @@
+.chart-container {
+    width: 100%;
+    padding: 20px;
+  }
+
+.line {
+  fill: none;
+  stroke: #2196F3;
+  stroke-width: 2;
+}
+.axis-label {
+  font-size: 12px;
+}
+
+.tooltip {
+  position: absolute;
+  padding: 8px;
+  background: rgba(25, 43, 69, 0.9);  /* Semi-transparent green */
+  color: #fff;
+  border-radius: 4px;
+  font-size: 12px;
+  pointer-events: none;
+  border: 1px solid #00ff08;  /* Darker green border */
+  box-shadow: 0 2px 4px #58c3d133;
+  opacity: 0;  /* Start hidden */
+  transition: opacity 0.3s;
+  z-index: 1000;  /* Make sure tooltip appears above other elements */
+}

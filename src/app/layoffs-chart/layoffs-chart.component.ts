@@ -2,50 +2,23 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as d3 from 'd3';
-import { DataService } from '../data.service';
+import { DataService } from '../services/data.service';
 import { LayoffData } from '../models/layoff-data';
 
 @Component({
   selector: 'app-layoffs-chart',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="chart-container">
-      <h2>Tech Industry Layoffs Timeline</h2>
-      <div *ngIf="loading" class="loading">Loading data...</div>
-      <div *ngIf="error" class="error">Error loading data: {{error}}</div>
-      <div #chartContainer id="chartContainer"></div>
-    </div>
-  `,
-  styles: [`
-    .chart-container {
-      width: 100%;
-      padding: 20px;
-    }
-    .line {
-      fill: none;
-      stroke: #2196F3;
-      stroke-width: 2;
-    }
-    .axis-label {
-      font-size: 12px;
-    }
-    .tooltip {
-      position: absolute;
-      padding: 8px;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      border-radius: 4px;
-      font-size: 12px;
-      pointer-events: none;
-    }
-  `]
+  templateUrl: './layoffs-chart.component.html',
+  styleUrls: ['./layoffs-chart.component.css']
 })
 export class LayoffsChartComponent implements OnInit {
   private svg!: d3.Selection<SVGGElement, unknown, null, undefined>;
+
+  //d3.js constants for creating a line chart
   private margin = { top: 50, right: 50, bottom: 50, left: 70 };
-  private width = 960 - this.margin.left - this.margin.right;
-  private height = 500 - this.margin.top - this.margin.bottom;
+  private width = 1200 - this.margin.left - this.margin.right;
+  private height = 800 - this.margin.top - this.margin.bottom;
 
   loading = false;
   error: string | null = null;
@@ -93,10 +66,12 @@ export class LayoffsChartComponent implements OnInit {
     // Create scales
     const x = d3.scaleTime()
       .domain(d3.extent(data, d => new Date(d.date)) as [Date, Date])
+      .nice()
       .range([0, this.width]);
 
     const y = d3.scaleLinear()
       .domain([0, d3.max(data, d => d.total) || 0])
+      .nice()
       .range([this.height, 0]);
 
     // Create line generator
@@ -108,7 +83,7 @@ export class LayoffsChartComponent implements OnInit {
     // Add X axis
     this.svg.append('g')
       .attr('transform', `translate(0,${this.height})`)
-      .call(d3.axisBottom(x))
+      .call(d3.axisBottom(x).ticks(20))
       .selectAll('text')
         .style('text-anchor', 'end')
         .attr('dx', '-.8em')
@@ -116,8 +91,23 @@ export class LayoffsChartComponent implements OnInit {
         .attr('transform', 'rotate(-45)');
 
     // Add Y axis
+    // this.svg.append('g')
+    //   .call(d3.axisLeft(y).ticks(18));
+
+    // Add horizontal grid lines
     this.svg.append('g')
-      .call(d3.axisLeft(y));
+    .attr('class', 'grid-lines')
+    .call(d3.axisLeft(y)
+    .ticks(10)
+    .tickSize(-this.width))
+    .style('stroke', '#e0e0e0')  // Add color directly
+    .style('stroke-opacity', 0.2)  // Add opacity directly
+    .style('shape-rendering', 'crispEdges');
+
+    // Remove the domain line (the axis line itself)
+    this.svg.selectAll('.grid-lines path')
+    .style('stroke-width', 0);
+      
 
     // Add Y axis label
     this.svg.append('text')
@@ -128,16 +118,25 @@ export class LayoffsChartComponent implements OnInit {
       .style('text-anchor', 'middle')
       .text('Number of Layoffs');
 
-    // Add the line path
+    // Add the line path element
     this.svg.append('path')
       .datum(data)
       .attr('class', 'line')
-      .attr('d', line);
+      .attr('d', line)
+      .style('stroke', '#00ff08')  // Same green as your dots
+      .style('fill', 'black')       // Ensure no fill
+      .style('stroke-width', 1);   // Line thickness
 
     // Add tooltip
     const tooltip = d3.select('body').append('div')
       .attr('class', 'tooltip')
-      .style('opacity', 0);
+      .style('position', 'absolute')
+      .style('visibility', 'hidden')
+      .style('background-color', 'rgba(197, 235, 197, 0.9)')
+      .style('border', '1px solid #ccc')
+      .style('padding', '10px')
+      .style('border-radius', '4px')
+      .style('box-shadow', '0 0 10px rgba(0, 0, 0, 0.1)');
 
     // Add dots for data points
     this.svg.selectAll('.dot')
@@ -146,19 +145,21 @@ export class LayoffsChartComponent implements OnInit {
         .attr('class', 'dot')
         .attr('cx', d => x(new Date(d.date)))
         .attr('cy', d => y(d.total))
-        .attr('r', 3)
-        .style('fill', '#2196F3')
+        .attr('r', 5)
+        .style('fill', '#00ff08')
+         // 3. Mouseover
         .on('mouseover', (event: MouseEvent, d: LayoffData) => {
           tooltip.transition()
-            .duration(200)
-            .style('opacity', .9);
+            .duration(500)
+            .style('opacity', 1);
           tooltip.html(`Date: ${d.date}<br/>Layoffs: ${d.total.toLocaleString()}`)
-            .style('left', (event.pageX + 5) + 'px')
-            .style('top', (event.pageY - 28) + 'px');
+            .style('left', (event.pageX + 10) + 'px')
+            .style('top', (event.pageY - 10) + 'px')
+            .style('visibility', 'visible');
         })
         .on('mouseout', () => {
           tooltip.transition()
-            .duration(500)
+            .duration(200)
             .style('opacity', 0);
         });
   }

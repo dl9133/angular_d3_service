@@ -51,7 +51,17 @@ export class DataService {
             }
           });
 
-          const result = Object.entries(groupedData)
+            const groupedByMonth: GroupedData = {};
+
+            Object.entries(groupedData).forEach(([date, total]) => {
+            const month = date.substring(0, 7); // Extract YYYY-MM from date
+            if (!groupedByMonth[month]) {
+              groupedByMonth[month] = 0;
+            }
+            groupedByMonth[month] += total;
+            });
+
+            const result = Object.entries(groupedByMonth)
             .map(([date, total]): LayoffData => ({ 
               date, 
               total 
