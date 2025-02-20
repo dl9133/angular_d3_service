@@ -91,9 +91,6 @@ export class LayoffsChartComponent implements OnInit {
         .attr('transform', 'rotate(-45)');
 
     // Add Y axis
-    // this.svg.append('g')
-    //   .call(d3.axisLeft(y).ticks(18));
-
     // Add horizontal grid lines
     this.svg.append('g')
     .attr('class', 'grid-lines')
@@ -123,8 +120,8 @@ export class LayoffsChartComponent implements OnInit {
       .datum(data)
       .attr('class', 'line')
       .attr('d', line)
-      .style('stroke', '#00ff08')  // Same green as your dots
-      .style('fill', 'black')       // Ensure no fill
+      .style('stroke', '#078cbce6')  // Same green as your dots
+      .style('fill', '#25ffe9e6')       // Ensure no fill
       .style('stroke-width', 1);   // Line thickness
 
     // Add tooltip
@@ -132,7 +129,7 @@ export class LayoffsChartComponent implements OnInit {
       .attr('class', 'tooltip')
       .style('position', 'absolute')
       .style('visibility', 'hidden')
-      .style('background-color', 'rgba(197, 235, 197, 0.9)')
+      .style('background-color', '#25ffe9e6')
       .style('border', '1px solid #ccc')
       .style('padding', '10px')
       .style('border-radius', '4px')
@@ -146,7 +143,7 @@ export class LayoffsChartComponent implements OnInit {
         .attr('cx', d => x(new Date(d.date)))
         .attr('cy', d => y(d.total))
         .attr('r', 5)
-        .style('fill', '#00ff08')
+        .style('fill', '#078cbce6')
          // 3. Mouseover
         .on('mouseover', (event: MouseEvent, d: LayoffData) => {
           tooltip.transition()
