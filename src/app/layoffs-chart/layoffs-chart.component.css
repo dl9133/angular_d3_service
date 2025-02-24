@@ -15,7 +15,7 @@
 .tooltip {
   position: absolute;
   padding: 8px;
-  background: rgba(25, 43, 69, 0.9);  /* Semi-transparent green */
+  background: #078cbce6;  /* Semi-transparent green */
   color: #fff;
   border-radius: 4px;
   font-size: 12px;
