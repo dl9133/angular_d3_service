@@ -68,7 +68,7 @@ export class DataService {
             }))
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-          console.log('Final processed data:', result.slice(0, 5)); // Log first 5 results
+            console.log('Final processed data:', result.slice(0, 30)); // Log first 30 results
           return result;
         })
       );
