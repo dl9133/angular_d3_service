@@ -62,7 +62,7 @@ export class LayoffsMapComponent implements OnInit, AfterViewInit {
       
       // Update statistics
       this.stats = {
-        totalCompanies: allCompanies.length,
+        totalCompanies: allCompanies.filter(company => company['Total Laid Off'] > 0).length,
         totalLayoffs: this.stateData.reduce((sum, state) => sum + state.totalLaidOff, 0),
         statesAffected: this.stateData.length
       };
@@ -181,19 +181,19 @@ export class LayoffsMapComponent implements OnInit, AfterViewInit {
     
     // Load US map
     this.http.get('https://gist.githubusercontent.com/Bradleykingz/3aa5206b6819a3c38b5d73cb814ed470/raw/a476b9098ba0244718b496697c5b350460d32f99/us-states.json').subscribe((usStates: any) => {
-      console.log('GeoJSON state names:', usStates.features.map((s: { properties: { name: any; }; }) => s.properties.name));
-      console.log('Your data state names:', this.stateData.map(s => s.State));
+      //console.log('GeoJSON state names:', usStates.features.map((s: { properties: { name: any; }; }) => s.properties.name));
+      //console.log('Your data state names:', this.stateData.map(s => s.State));
       if (!usStates || !usStates.features || !Array.isArray(usStates.features)) {
         console.error('Invalid US states GeoJSON format:', usStates);
         return;
       }
       
-      console.log('Number of states in GeoJSON:', usStates.features.length);
+      //console.log('Number of states in GeoJSON:', usStates.features.length);
       // Merge state data with map data
       const mergedData = _.map(usStates.features, (feature: any) => {
         const stateName = feature.properties.name;
         const stateData = _.find(this.stateData, { 'State': stateName });
-        console.log(`Merging state ${stateName}, found data:`, stateData);
+        //console.log(`Merging state ${stateName}, found data:`, stateData);
 
         return {
           ...feature,
@@ -223,14 +223,17 @@ export class LayoffsMapComponent implements OnInit, AfterViewInit {
           if (!d[this.selectedMetric]) return;
           
           this.tooltip.transition()
-            .duration(200)
+            .duration(500)
             .style("opacity", .9);
           
           let tooltipContent = `<strong>${d.properties.name}</strong><br>`;
           
           switch(this.selectedMetric) {
             case 'companyCount':
-              tooltipContent += `${d.companyCount} companies with layoffs`;
+              //console.log('Children of d element:', d);
+              // Use d.companies which should be the array of companies
+              const companies = d.companies || [];
+              tooltipContent += `${companies.filter((company: { [key: string]: any }) => company['Total Laid Off'] > 0).length} companies with layoffs`;
               break;
             case 'totalLaidOff':
               tooltipContent += `${d.totalLaidOff.toLocaleString()} employees laid off`;
@@ -252,11 +255,11 @@ export class LayoffsMapComponent implements OnInit, AfterViewInit {
             .style("cursor", "pointer");
           
           // Update the panel to show companies for this state
-          if (d.companies && d.companies.length > 0) {
-            this.searchText = '';
-            this.currentState = d.properties.name;
-            this.currentCompanies = d.companies;
-          }
+          // if (d.companies && d.companies.length > 0) {
+          //   this.searchText = '';
+          //   this.currentState = d.properties.name;
+          //   this.currentCompanies = d.companies;
+          // }
         })
         .on("mouseout", (event: any, d: any) => {
           d3.select(event.currentTarget).style("fill", () => {
@@ -265,8 +268,27 @@ export class LayoffsMapComponent implements OnInit, AfterViewInit {
           });
           
           this.tooltip.transition()
-            .duration(500)
+            .duration(200)
             .style("opacity", 0);
+        })
+        .on("click", (event: any, d: any) => {
+          if (!d.companies || d.companies.length === 0) return;
+    
+          // Clear the search input
+          this.searchText = '';
+          
+          // Update the state and companies
+          this.currentState = d.properties.name;
+          this.currentCompanies = d.companies;
+          
+          // Highlight the selected state
+          this.svg.selectAll('.state')
+            .style('stroke-width', function(s: any) {
+              return s === d ? 2 : 1;
+            })
+            .style('stroke', function(s: any) {
+              return s === d ? '#333' : '#ffffff';
+            });
         });
       
       // Create legend

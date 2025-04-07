@@ -42,7 +42,7 @@
       <div class="panel-header">
         <h3 class="panel-title">
           {{ currentState ? 'Layoffs in ' + currentState : 'All Companies with Layoffs' }}
-          ({{ currentCompanies.length }} {{ currentCompanies.length === 1 ? 'company' : 'companies' }})
+          ({{ filteredCompanies.length }} {{ filteredCompanies.length === 1 ? 'company' : 'companies' }})
         </h3>
       </div>
       <div class="search-container">
@@ -51,7 +51,7 @@
       </div>
       <div class="company-list">
         <div *ngIf="currentCompanies.length === 0" class="company-item no-data">
-          No company data available for this selection
+          No company data available for this selections
         </div>
         <!-- Company list -->
         <div *ngFor="let company of limitCompanies(filteredCompanies)" class="company-item">
