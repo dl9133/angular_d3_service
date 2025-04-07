@@ -1,0 +1,70 @@
+<div class="header">
+    <h2>US Tech Layoffs Visualization</h2>
+    <p class="subtitle">Analysis of tech company layoffs across the United States (2020-2025)</p>
+  </div>
+  
+  <div class="stats-container">
+    <div class="stat-box">
+      <div class="stat-label">Total Companies</div>
+      <div class="stat-number">{{ formatNumber(stats.totalCompanies) }}</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Total Layoffs</div>
+      <div class="stat-number">{{ formatNumber(stats.totalLayoffs) }}</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">States Affected</div>
+      <div class="stat-number">{{ formatNumber(stats.statesAffected) }}</div>
+    </div>
+  </div>
+  
+  <div class="controls">
+    <div class="instructions">
+      <p>Hover over a state to see company details for that state. Use the search box to filter companies.</p>
+    </div>
+    <select id="metricSelect" (change)="onMetricChange($event)" [value]="selectedMetric">
+      <option value="companyCount">Number of Companies</option>
+      <option value="totalLaidOff">Total Employees Laid Off</option>
+      <option value="avgPercentage">Average Layoff Percentage</option>
+    </select>
+    <button class="show-all-btn" (click)="resetSearch()">Show All Companies</button>
+  </div>
+  
+  <div class="main-container">
+    <div class="map-container">
+      <div class="home">
+        <div *ngIf="isLoading" class="loading">Loading data, please wait...</div>
+        <!-- D3 map will be inserted here -->
+      </div>
+    </div>
+    
+    <div id="companyPanel" class="company-panel">
+      <div class="panel-header">
+        <h3 class="panel-title">
+          {{ currentState ? 'Layoffs in ' + currentState : 'All Companies with Layoffs' }}
+          ({{ currentCompanies.length }} {{ currentCompanies.length === 1 ? 'company' : 'companies' }})
+        </h3>
+      </div>
+      <div class="search-container">
+        <input type="text" [value]="searchText" (input)="onSearchInput($event)" 
+               placeholder="Search companies by name, industry, or state..." />
+      </div>
+      <div class="company-list">
+        <div *ngIf="currentCompanies.length === 0" class="company-item no-data">
+          No company data available for this selection
+        </div>
+        <!-- Company list -->
+        <div *ngFor="let company of limitCompanies(currentCompanies)" class="company-item">
+          <div class="company-name">{{ company['Company Name'] || 'Unnamed' }}</div>
+          <div class="company-detail">State: {{ company['State'] || 'Unknown' }}</div>
+          <div class="company-detail">Industry: {{ company['Industry'] || 'Unknown' }}</div>
+          <div class="company-detail">Employees Laid Off: {{ formatNumber(company['Total Laid Off']) }}</div>
+          <div class="company-detail">Percentage: {{ company['Percentage'] || 'Unknown' }}</div>
+          <div class="company-detail">Date: {{ company['Date'] || 'Unknown' }}</div>
+        </div>
+        <div *ngIf="currentCompanies.length > 200" class="company-item count-notice">
+          Showing 200 of {{ currentCompanies.length }} companies
+        </div>
+      </div>
+    </div>
+  </div>
