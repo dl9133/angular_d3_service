@@ -93,36 +93,38 @@ select {
 }
 
 .map-container {
-  flex: 1;
+  flex: 2;
   min-width: 0;
 }
 
 .company-panel {
   flex: 1;
   position: sticky;
+  display: flex;
+  flex-direction: column;
   top: 20px;
   max-height: calc(100vh - 40px);
   overflow-y: auto;
   background: white;
-  border: 1px solid #ccc;
+  border: 1px solid #ccc; 
   border-radius: 8px;
-  padding: 15px;
+  padding: 5px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   margin-left: 20px;
   min-width: 0;
+  background: white;
+
 }
 
 .panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
   position: sticky;
-  top: 0;
+  top: -10px;
+  z-index: 11;
   background: white;
-  padding: 10px 0;
-  z-index: 100;
-  border-bottom: 1px solid #eee;
+  width: 100%;
+  padding: 15px 0; /* Increase top/bottom padding */
+  border-bottom: 12px solid #eee;
+  margin: 0; /* Reset any margins */
 }
 
 .panel-title {
@@ -131,27 +133,32 @@ select {
 }
 
 .search-container {
-  margin-bottom: 15px;
   position: sticky;
-  top: 50px;
-  z-index: 100;
+  top: 50px; /* Adjust based on your header height */
+  z-index: 10;
   background: white;
-  padding-bottom: 10px;
+  width: 100%;
+  padding: 15px 0; /* Increase top/bottom padding */
   border-bottom: 1px solid #eee;
+  margin: 15px 0; /* Add margin above and below */
   
   input {
     width: 100%;
-    padding: 8px;
+    padding: 8px 12px;
     border-radius: 4px;
     border: 1px solid #ccc;
+    font-size: 14px;
     box-sizing: border-box;
   }
 }
 
 .company-list {
   .company-item {
-    padding: 8px 0;
-    border-bottom: 1px solid #eee;
+    padding: 0; /* Increase top/bottom padding */
+    background: white;
+    margin-bottom: 3px; /* Add space between items */    border-bottom: none; 
+    position: relative;
+    z-index: 1; /* Lower than the sticky elements */
     
     &.no-data, &.count-notice {
       text-align: center;
@@ -159,9 +166,17 @@ select {
       color: #666;
     }
   }
+  .company-item:first-child {
+    margin-top: 10px;
+  }
+  .company-item:nth-child(even) {
+    background-color: #f9f9f9; /* Very light gray background for even items */
+  }
   
   .company-name {
     font-weight: bold;
+    background: white;
+    padding: 4px 0;
   }
   
   .company-detail {

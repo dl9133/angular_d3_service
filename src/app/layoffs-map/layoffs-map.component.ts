@@ -357,8 +357,24 @@ export class LayoffsMapComponent implements OnInit, AfterViewInit {
     }
     return value.toLocaleString();
   }
-  
-  limitCompanies(companies: any[], limit: number = 200): any[] {
-    return companies.slice(0, limit);
+  // In your LayoffsMapComponent class
+  get filteredCompanies(): any[] {
+    return this.currentCompanies.filter(company => company['Total Laid Off'] > 0);
   }
+
+  limitCompanies(companies: any[], limit: number = 200): any[] {
+      // First create a copy of the array to avoid modifying the original
+      const sortedCompanies = [...companies].sort((a, b) => {
+        // Parse dates - assuming format is YYYY-MM-DD
+        const dateA = a['Date'] ? new Date(a['Date']) : new Date(0);
+        const dateB = b['Date'] ? new Date(b['Date']) : new Date(0);
+        
+        // Sort descending (newest first)
+        return dateB.getTime() - dateA.getTime();
+      });
+      
+      // Then slice to limit the number of companies
+      return sortedCompanies.slice(0, limit);
+  }
+  
 }

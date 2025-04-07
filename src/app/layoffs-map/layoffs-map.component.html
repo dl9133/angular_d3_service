@@ -54,7 +54,7 @@
           No company data available for this selection
         </div>
         <!-- Company list -->
-        <div *ngFor="let company of limitCompanies(currentCompanies)" class="company-item">
+        <div *ngFor="let company of limitCompanies(filteredCompanies)" class="company-item">
           <div class="company-name">{{ company['Company Name'] || 'Unnamed' }}</div>
           <div class="company-detail">State: {{ company['State'] || 'Unknown' }}</div>
           <div class="company-detail">Industry: {{ company['Industry'] || 'Unknown' }}</div>
