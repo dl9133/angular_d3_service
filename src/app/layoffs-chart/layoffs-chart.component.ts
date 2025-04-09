@@ -261,8 +261,8 @@ export class LayoffsChartComponent implements OnInit {
     30000, 50000,                 // Value range (min, max)
     'COVID-19 Pandemic',        // Label
     'peak-period',               // CSS class name
-    'rgba(255, 165, 0, 0.15)',   // Fill color (light orange with transparency)
-    '#FF8C00'                    // Stroke color (dark orange)
+    'rgba(255, 165, 0, 0.95)',   // Fill color (light orange with transparency)
+    '#FF7039'                    // Stroke color (dark orange)
   );
   }
 

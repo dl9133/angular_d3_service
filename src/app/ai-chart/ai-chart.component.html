@@ -2,6 +2,7 @@
 <div class="ai-chart-container">
   <figure id="ai-chart"></figure>
   
+  <!-- Existing metric summary -->
   <div class="metric-summary">
     <h3>Changes from 2018 to 2025</h3>
     <div class="summary-grid">
@@ -16,4 +17,137 @@
       </ng-container>
     </div>
   </div>
+  
+  <!-- COVID Period Comparisons -->
+<div class="covid-period-metrics">
+  <h3>COVID Period Comparisons</h3>
+  <div class="period-explanation">
+    <p><strong>Note:</strong> Each period below shows the change that occurred <em>within that specific timeframe only</em>, not cumulative changes. 
+  </div>
+  <div class="periods-container">
+    <!-- Pre-COVID Period (updated) -->
+    <div class="period-metric-summary">
+      <h4>Pre-COVID (Jan 2018 to Dec 2019)</h4>
+      <div class="summary-grid">
+        <ng-container *ngFor="let metric of metrics; let i = index">
+          <div class="summary-item" [style.border-left-color]="colors[i % colors.length]">
+            <div class="metric-name">{{ metric }}</div>
+            <div class="metric-change" [class.positive]="getPeriodicChange(metric, '2018-01-01', '2019-12-31') > 0" [class.negative]="getPeriodicChange(metric, '2018-01-01', '2019-12-31') < 0">
+              <span class="change-value">{{ isPercentageMetric(metric) ? (getPeriodicChange(metric, '2018-01-01', '2019-12-31') | number:'1.1-1') + '%' : (getPeriodicChange(metric, '2018-01-01', '2019-12-31') | number:'1.1-1') }}</span>
+              <span class="change-direction">{{ getPeriodicChange(metric, '2018-01-01', '2019-12-31') > 0 ? '↑' : '↓' }}</span>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    
+    <!-- During COVID Period (updated) -->
+    <div class="period-metric-summary">
+      <h4>COVID Period (Jan 2020 to Dec 2022)</h4>
+      <div class="summary-grid">
+        <ng-container *ngFor="let metric of metrics; let i = index">
+          <div class="summary-item" [style.border-left-color]="colors[i % colors.length]">
+            <div class="metric-name">{{ metric }}</div>
+            <div class="metric-change" [class.positive]="getPeriodicChange(metric, '2020-01-01', '2022-12-31') > 0" [class.negative]="getPeriodicChange(metric, '2020-01-01', '2022-12-31') < 0">
+              <span class="change-value">{{ isPercentageMetric(metric) ? (getPeriodicChange(metric, '2020-01-01', '2022-12-31') | number:'1.1-1') + '%' : (getPeriodicChange(metric, '2020-01-01', '2022-12-31') | number:'1.1-1') }}</span>
+              <span class="change-direction">{{ getPeriodicChange(metric, '2020-01-01', '2022-12-31') > 0 ? '↑' : '↓' }}</span>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    
+    <!-- Post-COVID Period (updated) -->
+    <div class="period-metric-summary">
+      <h4>Post-COVID (Jan 2023 to 2025)</h4>
+      <div class="summary-grid">
+        <ng-container *ngFor="let metric of metrics; let i = index">
+          <div class="summary-item" [style.border-left-color]="colors[i % colors.length]">
+            <div class="metric-name">{{ metric }}</div>
+            <div class="metric-change" [class.positive]="getPeriodicChange(metric, '2023-01-01', '2025-01-01') > 0" [class.negative]="getPeriodicChange(metric, '2023-01-01', '2025-01-01') < 0">
+              <span class="change-value">{{ isPercentageMetric(metric) ? (getPeriodicChange(metric, '2023-01-01', '2025-01-01') | number:'1.1-1') + '%' : (getPeriodicChange(metric, '2023-01-01', '2025-01-01') | number:'1.1-1') }}</span>
+              <span class="change-direction">{{ getPeriodicChange(metric, '2023-01-01', '2025-01-01') > 0 ? '↑' : '↓' }}</span>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Additional CSS for COVID period metrics -->
+<style>
+  .covid-period-metrics {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+  
+  .covid-period-metrics h3 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+  }
+  
+  /* Flex container for the three periods */
+  .periods-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  
+  .period-metric-summary {
+    flex: 1;
+    min-width: 300px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .period-metric-summary h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #495057;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+  
+  /* Style the pre-COVID period with a blue tint */
+  .period-metric-summary:nth-child(1) {
+    background-color: #f0f8ff;
+    border-left: 4px solid #4e79a7;
+  }
+  
+  /* Style COVID period with orange tint matching your annotation */
+  .period-metric-summary:nth-child(2) {
+    background-color: #fff8f0;
+    border-left: 4px solid #FF7039;
+  }
+  
+  /* Style post-COVID period with a green tint */
+  .period-metric-summary:nth-child(3) {
+    background-color: #f0fff4;
+    border-left: 4px solid #59a14f;
+  }
+  
+  /* Make the summary grid more compact for the side-by-side view */
+  .period-metric-summary .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 1200px) {
+    .periods-container {
+      flex-direction: column;
+    }
+    
+    .period-metric-summary {
+      width: 100%;
+    }
+  }
+</style>

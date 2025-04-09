@@ -238,7 +238,7 @@ private drawChart(): void {
     .attr('text-anchor', 'middle')
     .style('font-size', '20px')
     .style('font-weight', 'bold')
-    .text('Rise of AI - Metrics Over Time (2018-2025)');
+    .text('Global Rise of AI 2018-2025');
 
   // Add vertical grid lines for years
   const yearTicks = d3.range(
@@ -479,31 +479,38 @@ public formatValue(metric: string, value: number): string {
 
 /**
  * Add custom annotations to the chart
- * @param x D3 time scale
- * @param y D3 linear scale for values
+ * This version ensures compatibility with the linear year scale used in the main chart
  */
 private addCustomAnnotations(
-  x: d3.ScaleTime<number, number>,
+  timeScale: d3.ScaleTime<number, number>,
   y: d3.ScaleLinear<number, number>
 ): void {
   // Create an annotation group
   const annotationGroup = this.svg.append('g')
     .attr('class', 'annotation-group');
 
-  // Define annotation data - vertical line annotations
-  const verticalAnnotations = [
-    { date: '2020-03-10', label: "OpenAI GPT-3" },
-    { date: '2021-01-15', label: "OpenAI Dall-E" },
-    { date: '2022-07-01', label: "Google SWE (Blake Lemone) Fired" },
-    { date: '2022-11-01', label: "OpenAI released ChatGPT interface" },
-    { date: '2023-02-15', label: "Mirosoft integrated ChatGPT into Bing" },
-    { date: '2023-03-01', label: "OpenAI announced GPT-4" },
-    { date: '2023-03-30', label: "Google released GPT chatbot Bard" }
+  // Define annotation data with exact year values (can include decimal for month precision)
+  const annotations = [
+    { year: 2020.19, label: "OpenAI GPT-3" },             // March 2020
+    { year: 2021.04, label: "OpenAI Dall-E" },            // January 2021
+    { year: 2022.5, label: "Google SWE (Blake Lemone) Fired" }, // July 2022
+    { year: 2022.92, label: "OpenAI released ChatGPT interface" }, // Late November 2022
+    { year: 2023.12, label: "Microsoft integrated ChatGPT into Bing" }, // February 2023
+    { year: 2023.17, label: "OpenAI announced GPT-4" },    // March 2023
+    { year: 2023.22, label: "Google released GPT chatbot Bard" } // March 2023
   ];
 
+  // Get the same x scale that's used for the main chart
+  const xScale = d3.scaleLinear()
+    .domain([
+      d3.min(this.data, d => d.year) || 2018,
+      d3.max(this.data, d => d.year) || 2025
+    ])
+    .range([0, this.width]);
+
   // Add vertical line annotations
-  verticalAnnotations.forEach(annotation => {
-    const xPos = x(new Date(annotation.date));
+  annotations.forEach(annotation => {
+    const xPos = xScale(annotation.year);
 
     const annotationItem = annotationGroup.append('g')
       .attr('class', 'annotation vertical-annotation');
@@ -512,76 +519,93 @@ private addCustomAnnotations(
     annotationItem.append('line')
       .attr('class', 'annotation-line')
       .attr('x1', xPos)
-      .attr('y1', this.margin.top - 30) // Start above the chart
+      .attr('y1', -10) // Start above the chart
       .attr('x2', xPos)
       .attr('y2', this.height)
       .style('stroke', '#888')
       .style('stroke-width', 1)
       .style('stroke-dasharray', '3,3');
 
-    // Add annotation label
-    if(annotation.date === "2022-11-01"){
+    // Position labels based on the specific annotation
+    if (annotation.label === "OpenAI released ChatGPT interface") {
       annotationItem.append('text')
-      .attr('class', 'annotation-label')
-      .attr('x', xPos)
-      .attr('y', this.margin.top - 10)
-      .attr('text-anchor', 'left')
-      .style('font-size', '20px')
-      .style('font-weight', 'bold')
-      .text(annotation.label);
-    } else if(annotation.date === "2023-02-15") {        
+        .attr('class', 'annotation-label')
+        .attr('x', xPos)
+        .attr('y', 30)
+        .attr('text-anchor', 'left')
+        .style('font-size', '16px')
+        .style('font-weight', 'bold')
+        .text(annotation.label);
+    } else if (annotation.label === "Microsoft integrated ChatGPT into Bing") {        
       annotationItem.append('text')
-      .attr('class', 'annotation-label')
-      .attr('x', xPos)
-      .attr('y', 60)
-      .attr('text-anchor', 'left')
-      .style('font-size', '12px')
-      .style('font-weight', 'bold')
-      .text(annotation.label);
-
-    } else if(annotation.date === "2023-03-01") {
+        .attr('class', 'annotation-label')
+        .attr('x', xPos)
+        .attr('y', 60)
+        .attr('text-anchor', 'left')
+        .style('font-size', '11px')
+        .style('font-weight', 'bold')
+        .text(annotation.label);
+    } else if (annotation.label === "OpenAI announced GPT-4") {
       annotationItem.append('text')
-      .attr('class', 'annotation-label')
-      .attr('x', xPos)
-      .attr('y', 80)
-      .attr('text-anchor', 'left')
-      .style('font-size', '12px')
-      .style('font-weight', 'bold')
-      .text(annotation.label);
-
-    }else if(annotation.date === "2023-03-30") {
+        .attr('class', 'annotation-label')
+        .attr('x', xPos)
+        .attr('y', 80)
+        .attr('text-anchor', 'left')
+        .style('font-size', '11px')
+        .style('font-weight', 'bold')
+        .text(annotation.label);
+    } else if (annotation.label === "Google released GPT chatbot Bard") {
       annotationItem.append('text')
-      .attr('class', 'annotation-label')
-      .attr('x', xPos)
-      .attr('y',100)
-      .attr('text-anchor', 'left')
-      .style('font-size', '12px')
-      .style('font-weight', 'bold')
-      .text(annotation.label);
-
-    }else {      
+        .attr('class', 'annotation-label')
+        .attr('x', xPos)
+        .attr('y', 100)
+        .attr('text-anchor', 'left')
+        .style('font-size', '11px')
+        .style('font-weight', 'bold')
+        .text(annotation.label);
+    } else {      
       annotationItem.append('text')
-      .attr('class', 'annotation-label')
-      .attr('x', xPos)
-      .attr('y', this.margin.top - 35)
-      .attr('text-anchor', 'left')
-      .style('font-size', '12px')
-      .style('font-weight', 'bold')
-      .text(annotation.label);
+        .attr('class', 'annotation-label')
+        .attr('x', xPos)
+        .attr('y', 5)
+        .attr('text-anchor', 'left')
+        .style('font-size', '11px')
+        .style('font-weight', 'bold')
+        .text(annotation.label);
     }
   });
 
-  // ADD RECTANGLE ANNOTATIONS
-  this.addRectangleAnnotation(
-    annotationGroup,
-    x, y,
-    '2020-03-01', '2022-09-30',  // Date range
-    30, 50,                       // Value range (min, max) - adjusted for percentage scale
-    'COVID-19 Pandemic',         // Label
-    'peak-period',               // CSS class name
-    'rgba(255, 165, 0, 0.15)',   // Fill color (light orange with transparency)
-    '#FF7039'                    // Stroke color (dark orange)
-  );
+  // ADD RECTANGLE ANNOTATION FOR COVID PERIOD
+  // Using the same x scale for consistency
+  const startYear = 2020.0;  // January 2020
+  const endYear = 2022.99;   // December 2022
+  
+  const startX = xScale(startYear);
+  const endX = xScale(endYear);
+  const startY = y(50);  // Upper y position (50%)
+  const endY = y(30);    // Lower y position (30%)
+
+  // Add rectangle
+  annotationGroup.append('rect')
+    .attr('class', 'annotation-rect peak-period')
+    .attr('x', startX)
+    .attr('y', startY)
+    .attr('width', endX - startX)
+    .attr('height', endY - startY)
+    .style('fill', 'rgba(255, 165, 0, 0.80)')
+    .style('stroke', '#FF7039')
+    .style('stroke-width', 1);
+    
+  // Add label inside the rectangle
+  annotationGroup.append('text')
+    .attr('class', 'annotation-rect-label')
+    .attr('x', startX + (endX - startX) / 2)
+    .attr('y', startY + 20)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '12px')
+    .style('font-weight', 'bold')
+    .style('fill', '#884400')
+    .text('COVID-19 Pandemic');
 }
 
 /**
@@ -627,5 +651,95 @@ private addRectangleAnnotation(
     .style('font-weight', 'bold')
     .style('fill', '#884400')
     .text(label);
+}
+
+// Add this method to your AIChartComponent class
+
+/**
+ * Calculate the percentage change between two specified dates for a given metric
+ * @param metric The metric name to calculate change for
+ * @param startDateStr Start date in YYYY-MM-DD format
+ * @param endDateStr End date in YYYY-MM-DD format
+ * @returns The percentage or absolute change value
+ */
+public getPeriodicChange(metric: string, startDateStr: string, endDateStr: string): number {
+  const metricData = this.data.filter(d => d.metric === metric);
+  
+  // Convert string dates to Date objects
+  const startDate = new Date(startDateStr);
+  const endDate = new Date(endDateStr);
+  
+  // Get start year and end year
+  const startYear = startDate.getFullYear();
+  const endYear = endDate.getFullYear();
+  
+  // Find the closest data points to the specified dates
+  // First priority: exact year match
+  let startData = metricData.find(d => d.year === startYear);
+  let endData = metricData.find(d => d.year === endYear);
+  
+  // Second priority: find closest available data point
+  if (!startData) {
+    // Find the closest year greater than or equal to startYear
+    const availableYears = metricData.map(d => d.year).filter(y => y >= startYear).sort();
+    if (availableYears.length > 0) {
+      startData = metricData.find(d => d.year === availableYears[0]);
+    }
+  }
+  
+  if (!endData) {
+    // Find the closest year less than or equal to endYear
+    const availableYears = metricData.map(d => d.year).filter(y => y <= endYear).sort((a, b) => b - a);
+    if (availableYears.length > 0) {
+      endData = metricData.find(d => d.year === availableYears[0]);
+    }
+  }
+  
+  // If we still don't have data points, return 0
+  if (!startData || !endData) {
+    return 0;
+  }
+  
+  // Calculate the change
+  const startValue = startData.value;
+  const endValue = endData.value;
+  const absoluteChange = endValue - startValue;
+  
+  // Return the change in percentage points (for percentage metrics)
+  // or absolute value change (for job metrics)
+  return absoluteChange;
+}
+
+/**
+ * Get the most recent value for a metric up to the specified date
+ * @param metric The metric name
+ * @param dateStr Date in YYYY-MM-DD format
+ * @returns The metric value or 0 if not found
+ */
+public getMetricValueAtDate(metric: string, dateStr: string): number {
+  const metricData = this.data.filter(d => d.metric === metric);
+  
+  if (metricData.length === 0) {
+    return 0;
+  }
+  
+  // Convert string date to Date object
+  const targetDate = new Date(dateStr);
+  const targetYear = targetDate.getFullYear();
+  
+  // Find the closest year less than or equal to the target year
+  const availableYears = metricData
+    .map(d => d.year)
+    .filter(y => y <= targetYear)
+    .sort((a, b) => b - a);
+  
+  if (availableYears.length === 0) {
+    return 0;
+  }
+  
+  const closestYear = availableYears[0];
+  const dataPoint = metricData.find(d => d.year === closestYear);
+  
+  return dataPoint ? dataPoint.value : 0;
 }
 }
