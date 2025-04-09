@@ -1,0 +1,103 @@
+/* src/app/ai-chart/ai-chart.component.css */
+
+.ai-chart-container {
+  font-family: Arial, sans-serif;
+}
+
+.metric-summary {
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.metric-summary h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #333;
+  text-align: center;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: white;
+  border-radius: 6px;
+  border-left: 4px solid #ccc;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.metric-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.metric-change {
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.change-value {
+  margin-right: 5px;
+}
+
+.change-direction {
+  font-size: 18px;
+}
+
+.positive {
+  color: #2e7d32;
+}
+
+.negative {
+  color: #c62828;
+}
+
+/* Annotation Styles */
+.annotation-line {
+  pointer-events: none;
+}
+
+.annotation-label {
+  pointer-events: none;
+}
+
+.annotation-rect {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.annotation-rect-label {
+  pointer-events: none;
+}
+
+.peak-period {
+  opacity: 0.3;
+}
+
+@media (max-width: 1200px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}

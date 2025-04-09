@@ -1,0 +1,19 @@
+<!-- src/app/ai-chart/ai-chart.component.html -->
+<div class="ai-chart-container">
+  <figure id="ai-chart"></figure>
+  
+  <div class="metric-summary">
+    <h3>Changes from 2018 to 2025</h3>
+    <div class="summary-grid">
+      <ng-container *ngFor="let metric of metrics; let i = index">
+        <div class="summary-item" [style.border-left-color]="colors[i % colors.length]">
+          <div class="metric-name">{{ metric }}</div>
+          <div class="metric-change" [class.positive]="getPercentageChange(metric) > 0" [class.negative]="getPercentageChange(metric) < 0">
+            <span class="change-value">{{ isPercentageMetric(metric) ? (getPercentageChange(metric) | number:'1.1-1') + '%' : (getPercentageChange(metric) | number:'1.1-1') }}</span>
+            <span class="change-direction">{{ getPercentageChange(metric) > 0 ? '↑' : '↓' }}</span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

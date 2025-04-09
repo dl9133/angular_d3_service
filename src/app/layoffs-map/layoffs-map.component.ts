@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import * as d3 from 'd3';
 //import * as topojson from 'topojson-client';
 import * as _ from 'lodash';
-import * as Papa from 'papaparse';
 import tinycolor from 'tinycolor2';
 import { DataService } from '../services/data.service';
 

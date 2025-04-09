@@ -10,6 +10,13 @@ interface LayoffData {
   total: number;
 }
 
+interface AIDataPoint {
+  year: number;
+  metric: string;
+  value: number;
+}
+
+
 interface RawLayoffData {
   date: string;
   total_laid_off: number;
@@ -264,4 +271,71 @@ export class DataService {
     
     return null;
   }
+
+getAIPercentageData(): Observable<AIDataPoint[]> {
+  return this.http.get('assets/rise_of_ai.csv', { responseType: 'text' })
+    .pipe(
+      map(csvText => {
+        const parsedData = Papa.parse(csvText, {
+          header: true,
+          dynamicTyping: true
+        });
+
+        console.log('Parsed AI Data:', parsedData.data);
+
+        // Array to hold our formatted data
+        const result: AIDataPoint[] = [];
+        
+        // Process each row (year)
+        parsedData.data.forEach((row: any) => {
+          if (!row.Year) return; // Skip rows without year
+          
+          // Process each column that contains percentage data
+          Object.entries(row).forEach(([key, value]) => {
+            // Check if the column name contains percentage indicators or is one of the percentage columns
+            // and the value is not null or undefined
+            if (value !== null && value !== undefined && 
+                (key.includes('%') || 
+                 ['AI Adoption (%)', 'Global Expectation for AI Adoption (%)', 
+                  'Organizations Believing AI Provides Competitive Edge',
+                  'Companies Prioritizing AI in Strategy',
+                  'Marketers Believing AI Improves Email Revenue',
+                  'Expected Increase in Employee Productivity Due to AI (%)',
+                  'Americans Using Voice Assistants (%)',
+                  'Medical Professionals Using AI for Diagnosis',
+                  'Jobs at High Risk of Automation - Transportation & Storage (%)',
+                  'Jobs at High Risk of Automation - Wholesale & Retail Trade',
+                  'Jobs at High Risk of Automation - Manufacturing',
+                  'Estimated Jobs Eliminated by AI (millions)',
+                  'Estimated New Jobs Created by AI (millions)',
+                  'Net Job Loss in the US',
+                  'Estimated Jobs Eliminated by AI (millions)'].includes(key))) {
+              
+              // Convert percentage strings to numbers
+              let numValue: number;
+              if (typeof value === 'string' && value.includes('%')) {
+                numValue = parseFloat(value.replace('%', ''));
+              } else if (typeof value === 'string') {
+                numValue = parseFloat(value);
+              } else {
+                numValue = value as number;
+              }
+              
+              // Only add if it's a valid number
+              if (!isNaN(numValue)) {
+                result.push({
+                  year: row.Year,
+                  metric: key,
+                  value: numValue
+                });
+              }
+            }
+          });
+        });
+
+        console.log('Processed AI Data:', result);
+        return result;
+      })
+    );
+}
 }
