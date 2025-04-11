@@ -309,7 +309,10 @@ getAIPercentageData(): Observable<AIDataPoint[]> {
                   'Estimated Jobs Eliminated by AI (millions)',
                   'Estimated New Jobs Created by AI (millions)',
                   'Net Job Loss in the US',
-                  'Estimated Jobs Eliminated by AI (millions)'].includes(key))) {
+                  'Estimated Jobs Eliminated by AI (millions)',
+                  'Organizations Using AI',
+                  'Organizations Planning to Implement AI',
+                  ].includes(key))) {
               
               // Convert percentage strings to numbers
               let numValue: number;

@@ -177,7 +177,7 @@ export class LayoffsChartComponent implements OnInit {
       { date: '2021-01-15', label: "Open AI Dall-E" },
       { date: '2022-07-01', label: "Google SWE (Blake Lemone) Fired" },
       { date: '2022-11-01', label: "OpenAI released ChatGPT interface" },
-      { date: '2023-02-15', label: "Mirosoft integrated ChatGPT into Bing search engine." },
+      { date: '2023-02-15', label: "Microsoft integrated ChatGPT into Bing search engine." },
       { date: '2023-03-01', label: "OpenAI announced GPT-4,multimodal LLM capable of processing both text and image prompts" },
       { date: '2023-03-30', label: "Google released its GPT chatbot Bard" }
     ];

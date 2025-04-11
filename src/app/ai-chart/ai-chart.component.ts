@@ -55,9 +55,6 @@ ngOnInit(): void {
       }
     });
     
-    // Add sample data for new metrics if needed
-    this.addSampleDataIfNeeded();
-
     // Populate the cache with metric values
     this.populateMetricValueCache();
     
@@ -67,66 +64,6 @@ ngOnInit(): void {
   });
 }
 
-/**
- * Add sample data for the new metrics if they're not already in the dataset
- * This is just for demonstration purposes
- */
-private addSampleDataIfNeeded(): void {
-  const requiredMetrics = [
-    'Organizations Using AI',
-    'Organizations Planning to Implement AI',
-    'Estimated Jobs Eliminated by AI (millions)',
-    'Estimated New Jobs Created by AI (millions)',
-    'Net Job Loss in the US'
-  ];
-  
-  const existingMetrics = new Set(this.metrics);
-  const years = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
-  let dataModified = false;
-  
-  requiredMetrics.forEach(metric => {
-    if (!existingMetrics.has(metric)) {
-      // Add sample data for this metric
-      const isJob = metric.includes('Jobs') || metric.includes('Job Loss');
-      
-      years.forEach(year => {
-        // Generate some sample values based on the metric type
-        let value;
-        if (isJob) {
-          // Job metrics in millions (0-10 range)
-          if (metric.includes('Eliminated')) {
-            value = 0.5 + (year - 2018) * 0.7; // Increasing from 0.5 to ~5.4 million
-          } else if (metric.includes('Created')) {
-            value = 0.3 + (year - 2018) * 0.5; // Increasing from 0.3 to ~3.8 million
-          } else if (metric.includes('Net')) {
-            value = 0.2 + (year - 2018) * 0.2; // Increasing from 0.2 to ~1.6 million
-          }
-        } else {
-          // Percentage values (0-100 range)
-          if (metric.includes('Using')) {
-            value = 10 + (year - 2018) * 7; // Increasing from 10% to ~59%
-          } else if (metric.includes('Planning')) {
-            value = 20 + (year - 2018) * 5; // Increasing from 20% to ~55%
-          }
-        }
-        
-        // Add to data array
-        this.data.push({
-          year,
-          metric,
-          value: value ?? 0
-        });
-      });
-      
-      // Add to metrics array if not already there
-      if (!this.metrics.includes(metric)) {
-        this.metrics.push(metric);
-      }
-      
-      dataModified = true;
-    }
-  });
-}
 
 private createSvg(): void {
   // Remove any existing SVG
@@ -350,7 +287,7 @@ private drawChart(): void {
       .attr('text-anchor', 'end')
       .style('font-size', '10px')
       .style('font-style', 'italic')
-      .text(this.isPercentageMetric(metric) ? '' : ' (Right axis)');
+      .text(this.isPercentageMetric(metric) ? '' : '(Right axis)');
     
     // Add click event to toggle visibility
     legendItem.style('cursor', 'pointer')
