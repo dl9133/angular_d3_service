@@ -36,6 +36,9 @@ public colors: string[] = [
 ];
 private visibleMetrics: Set<string> = new Set(); // Track which metrics are visible (only AI Adoption initially)
 
+ // Cache for metric values at specific years to avoid redundant calculations
+ private metricValueCache: Map<string, Map<number, number>> = new Map();
+
 constructor(private dataService: DataService) {}
 
 ngOnInit(): void {
@@ -54,6 +57,9 @@ ngOnInit(): void {
     
     // Add sample data for new metrics if needed
     this.addSampleDataIfNeeded();
+
+    // Populate the cache with metric values
+    this.populateMetricValueCache();
     
     // Create SVG and draw the chart AFTER data is ready
     this.createSvg();
@@ -742,4 +748,55 @@ public getMetricValueAtDate(metric: string, dateStr: string): number {
   
   return dataPoint ? dataPoint.value : 0;
 }
+/**
+   * Populate the cache with metric values for quick access
+   */
+  private populateMetricValueCache(): void {
+    // Clear the cache first
+    this.metricValueCache.clear();
+    
+    // Group data by metric
+    this.metrics.forEach(metric => {
+      const metricData = this.data.filter(d => d.metric === metric);
+      const yearMap = new Map<number, number>();
+      
+      metricData.forEach(d => {
+        // Convert string percentage values to numbers if needed
+        let value = d.value;
+        if (typeof value === 'string') {
+          // Cast to string explicitly before using replace
+          value = parseFloat((value as string).replace(/%/g, ''));
+        }
+        yearMap.set(d.year, value);
+      });
+      
+      this.metricValueCache.set(metric, yearMap);
+    });
+  }
+
+  /**
+   * Get the value of a metric for a specific year from the cache
+   * @param metric The metric name
+   * @param year The year to get the value for
+   * @returns The metric value or 0 if not found
+   */
+  private getMetricValueForYear(metric: string, year: number): number {
+    const metricMap = this.metricValueCache.get(metric);
+    if (!metricMap) return 0;
+    
+    return metricMap.get(year) || 0;
+  }
+  /**
+   * Calculate the difference between metric values at two years
+   * @param metric The metric name
+   * @param startYear The starting year
+   * @param endYear The ending year
+   * @returns The difference between the values
+   */
+  public getMetricDifference(metric: string, startYear: number, endYear: number): number {
+    const startValue = this.getMetricValueForYear(metric, startYear);
+    const endValue = this.getMetricValueForYear(metric, endYear);
+    
+    return endValue - startValue;
+  }
 }
