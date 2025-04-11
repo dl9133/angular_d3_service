@@ -252,13 +252,6 @@ export class LayoffsMapComponent implements OnInit, AfterViewInit {
           d3.select(event.currentTarget)
             .style("fill", tinycolor(colorScale(d[this.selectedMetric])).darken(15).toString())
             .style("cursor", "pointer");
-          
-          // Update the panel to show companies for this state
-          // if (d.companies && d.companies.length > 0) {
-          //   this.searchText = '';
-          //   this.currentState = d.properties.name;
-          //   this.currentCompanies = d.companies;
-          // }
         })
         .on("mouseout", (event: any, d: any) => {
           d3.select(event.currentTarget).style("fill", () => {
